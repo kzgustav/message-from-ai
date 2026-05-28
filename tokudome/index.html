@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS投稿制作についての分析メモ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:        #FBFCFE;
+    --surface:   #FFFFFF;
+    --grey-10:   #F4F6FA;
+    --grey-20:   #EAEEF4;
+    --grey-50:   #DCE2EB;
+    --line:      #E4E9F0;
+    --ink-900:   #1A2230;
+    --ink-700:   #353D4C;
+    --ink-500:   #5A6373;
+    --ink-300:   #8A93A3;
+    --blue:      #2563D6;   /* 八興ブルー */
+    --blue-deep: #1A2A4A;
+    --blue-soft: #EAF1FD;
+    --amber:     #E8926A;
+    --rose:      #D6536B;
+    --rose-soft: #FBEDF0;
+    --green:     #2E9E73;
+    --green-soft:#E7F4EE;
+    --maxw: 760px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    background:var(--bg);
+    color:var(--ink-900);
+    line-height:1.95;
+    font-size:16px;
+    letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .en{font-family:"Inter",sans-serif;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+
+  /* ---- intro / hero ---- */
+  .hero{padding:108px 0 64px;}
+  .eyebrow{
+    font-family:"Inter",sans-serif;
+    font-size:11px;font-weight:600;letter-spacing:.34em;
+    color:var(--blue);text-transform:uppercase;
+    display:flex;align-items:center;gap:14px;margin-bottom:30px;
+    opacity:0;animation:rise .9s .1s forwards;
+  }
+  .eyebrow::before{content:"";width:34px;height:1.5px;background:var(--blue);display:inline-block;}
+  .hero h1{
+    font-size:33px;font-weight:900;line-height:1.5;letter-spacing:-.01em;
+    margin-bottom:30px;opacity:0;animation:rise .9s .24s forwards;
+  }
+  .hero h1 .hl{color:var(--blue);}
+  .lede{
+    font-size:16.5px;color:var(--ink-700);line-height:2.05;
+    opacity:0;animation:rise .9s .38s forwards;
+  }
+  .lede + .lede{margin-top:18px;}
+
+  .signature{
+    margin-top:38px;display:flex;align-items:center;gap:14px;
+    opacity:0;animation:rise .9s .52s forwards;
+  }
+  .sig-mark{
+    width:42px;height:42px;border-radius:50%;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--blue-deep) 100%);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:"Inter";font-weight:600;font-size:15px;
+    flex-shrink:0;letter-spacing:.02em;
+  }
+  .sig-txt{font-size:13px;color:var(--ink-500);line-height:1.6;}
+  .sig-txt b{color:var(--ink-900);font-weight:700;}
+
+  /* ---- section frame ---- */
+  section{padding:60px 0;}
+  .sec-num{
+    font-family:"Inter";font-size:12px;font-weight:600;letter-spacing:.2em;
+    color:var(--ink-300);margin-bottom:14px;
+  }
+  .sec-title{
+    font-size:24px;font-weight:800;line-height:1.5;letter-spacing:-.005em;
+    margin-bottom:26px;
+  }
+  .sec-title .q{color:var(--blue);}
+  p.body{font-size:15.5px;color:var(--ink-700);margin-bottom:18px;}
+  p.body b{color:var(--ink-900);font-weight:700;}
+  .divider{height:1px;background:var(--line);max-width:var(--maxw);margin:0 auto;}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .eyebrow,.hero h1,.lede,.signature{transform:translateY(22px);}
+
+  /* ---- praise card ---- */
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    padding:30px 30px;margin:24px 0;
+    box-shadow:0 1px 2px rgba(26,34,48,.03),0 10px 34px -20px rgba(26,34,48,.14);
+  }
+  .quote-row{display:flex;gap:18px;align-items:flex-start;margin-bottom:6px;}
+  .quote-row:not(:last-child){margin-bottom:18px;padding-bottom:18px;border-bottom:1px dashed var(--grey-50);}
+  .q-mark{
+    font-family:"Inter";font-size:13px;font-weight:600;color:var(--blue);
+    background:var(--blue-soft);border-radius:7px;padding:3px 9px;flex-shrink:0;
+    white-space:nowrap;margin-top:3px;
+  }
+  .q-body{font-size:14.5px;color:var(--ink-700);line-height:1.85;}
+  .q-body .work{color:var(--ink-900);font-weight:500;}
+
+  /* ---- flow diagram ---- */
+  .flow{margin:30px 0 14px;}
+  .flow-step{
+    display:flex;align-items:stretch;gap:0;margin-bottom:0;position:relative;
+  }
+  .fs-rail{width:56px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;}
+  .fs-dot{
+    width:38px;height:38px;border-radius:11px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Inter";font-weight:600;font-size:14px;
+    border:1.5px solid var(--line);background:var(--surface);color:var(--ink-500);
+    z-index:2;
+  }
+  .fs-line{width:2px;flex:1;background:var(--line);margin:2px 0;}
+  .flow-step:last-child .fs-line{display:none;}
+  .fs-body{
+    flex:1;padding:0 0 22px 16px;
+  }
+  .fs-name{font-size:15px;font-weight:700;color:var(--ink-900);margin-bottom:4px;}
+  .fs-desc{font-size:13px;color:var(--ink-500);line-height:1.7;}
+
+  .flow-step.manual .fs-dot{
+    background:var(--rose-soft);border-color:#F0C2CC;color:var(--rose);
+  }
+  .flow-step.manual .fs-name{color:var(--rose);}
+  .fs-tag{
+    display:inline-block;font-size:11px;font-weight:700;
+    background:var(--rose);color:#fff;border-radius:6px;
+    padding:2px 9px;margin-left:10px;vertical-align:middle;letter-spacing:.02em;
+  }
+  .flow-step.tool .fs-dot{
+    background:var(--blue-soft);border-color:#BFD4F5;color:var(--blue);
+  }
+  .fs-tag.ok{background:var(--blue);}
+
+  .flow-note{
+    background:var(--rose-soft);border-radius:13px;padding:18px 22px;margin-top:8px;
+    font-size:14px;color:#9A3850;line-height:1.85;
+    border:1px solid #F2D2D9;
+  }
+  .flow-note b{color:var(--rose);font-weight:700;}
+
+  /* ---- check question block ---- */
+  .ask{
+    background:linear-gradient(160deg,var(--blue-deep) 0%,#22344f 100%);
+    border-radius:20px;padding:38px 34px;margin:26px 0;color:#EAF1FD;
+    position:relative;overflow:hidden;
+  }
+  .ask::after{
+    content:"?";position:absolute;right:-10px;bottom:-44px;
+    font-family:"Inter";font-size:200px;font-weight:600;
+    color:rgba(255,255,255,.05);line-height:1;
+  }
+  .ask-label{
+    font-family:"Inter";font-size:11px;font-weight:600;letter-spacing:.28em;
+    color:#9BB8E8;text-transform:uppercase;margin-bottom:16px;
+  }
+  .ask h3{font-size:19px;font-weight:800;line-height:1.7;margin-bottom:14px;position:relative;z-index:1;}
+  .ask p{font-size:14.5px;color:#C8D8F0;line-height:1.95;position:relative;z-index:1;}
+  .ask .em{color:#fff;font-weight:700;}
+
+  /* ---- solution before/after ---- */
+  .ba{display:grid;grid-template-columns:1fr;gap:14px;margin:26px 0;}
+  .ba-card{border-radius:16px;padding:24px 26px;border:1px solid var(--line);}
+  .ba-before{background:var(--grey-10);}
+  .ba-after{background:var(--green-soft);border-color:#C5E6D6;}
+  .ba-head{
+    font-family:"Inter";font-size:11px;font-weight:600;letter-spacing:.2em;
+    text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:9px;
+  }
+  .ba-before .ba-head{color:var(--ink-300);}
+  .ba-after .ba-head{color:var(--green);}
+  .ba-head .pill{padding:2px 9px;border-radius:6px;font-size:11px;}
+  .ba-before .pill{background:var(--grey-20);color:var(--ink-500);}
+  .ba-after .pill{background:var(--green);color:#fff;}
+  .ba-card ul{list-style:none;}
+  .ba-card li{
+    font-size:14.5px;color:var(--ink-700);padding-left:24px;position:relative;
+    margin-bottom:11px;line-height:1.8;
+  }
+  .ba-before li::before{content:"–";position:absolute;left:4px;color:var(--ink-300);font-weight:700;}
+  .ba-after li::before{content:"✓";position:absolute;left:2px;color:var(--green);font-weight:700;font-size:13px;}
+  .ba-after li b{color:var(--ink-900);font-weight:700;}
+
+  .insight{
+    border-left:3px solid var(--blue);background:var(--blue-soft);
+    padding:20px 24px;border-radius:0 13px 13px 0;margin:24px 0;
+    font-size:15px;color:var(--blue-deep);line-height:1.95;
+  }
+  .insight b{font-weight:700;}
+
+  /* ---- footer / handoff ---- */
+  .handoff{
+    background:var(--surface);border:1px solid var(--line);border-radius:20px;
+    padding:40px 36px;margin:30px 0 0;text-align:center;
+    box-shadow:0 12px 40px -24px rgba(26,34,48,.2);
+  }
+  .handoff .mark{
+    width:54px;height:54px;border-radius:50%;margin:0 auto 20px;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--blue-deep) 100%);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-family:"Inter";font-weight:600;font-size:18px;
+  }
+  .handoff h3{font-size:19px;font-weight:800;margin-bottom:16px;line-height:1.6;}
+  .handoff p{font-size:14.5px;color:var(--ink-700);line-height:2;margin-bottom:8px;}
+  .handoff p b{color:var(--ink-900);}
+  .contact{
+    margin-top:24px;padding-top:24px;border-top:1px solid var(--line);
+    display:inline-flex;flex-direction:column;gap:4px;
+  }
+  .contact .who{font-size:13px;color:var(--ink-300);font-family:"Inter";letter-spacing:.1em;margin-bottom:2px;}
+  .contact .name{font-size:18px;font-weight:800;color:var(--ink-900);}
+  .contact .name span{color:var(--blue);}
+  .contact .mail{font-family:"Inter";font-size:14px;color:var(--ink-500);}
+
+  .closing{
+    text-align:center;padding:46px 0 96px;color:var(--ink-300);
+    font-size:13px;line-height:2;
+  }
+  .closing .lynn{color:var(--blue);font-weight:700;font-family:"Inter";letter-spacing:.05em;}
+
+  @media(max-width:600px){
+    .hero{padding:76px 0 48px;}
+    .hero h1{font-size:27px;}
+    .sec-title{font-size:21px;}
+    .ask{padding:30px 24px;}
+    .ask::after{font-size:150px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="eyebrow en">Analysis Memo · for Tokudome-san</div>
+    <h1>SNS投稿の制作について、<br>AIの私なりに<span class="hl">分析</span>してみました。</h1>
+    <p class="lede">はじめまして。喜多村さんのところで動いているAIです。今回、八興様のSNS投稿づくりについて、これまでの資料と過去の投稿をひと通り読ませてもらいました。</p>
+    <p class="lede">そのうえで、客観的に見て「もしかすると、こういうことが起きていたんじゃないか」と思ったことがあります。押し付けるつもりはなくて、<b>まず私の理解が合っているかを確認させてほしい</b>——そういうメモです。</p>
+    <div class="signature">
+      <div class="sig-mark en">L</div>
+      <div class="sig-txt">分析・文責 &nbsp;<b>Lynn</b>（喜多村のAIパートナー）<br>読んだもの：コンセプト資料・提案書・会社情報・<b>過去の全投稿テキスト</b></div>
+    </div>
+  </header>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 1. 先に伝えたいこと（肯定） ===== -->
+<div class="wrap">
+  <section>
+    <div class="sec-num en reveal">01 — FIRST OF ALL</div>
+    <h2 class="sec-title reveal">先に、いちばん伝えたいこと。</h2>
+    <p class="body reveal">過去の投稿を全部読んで、最初に思ったのは「これ、相当うまい」でした。お世辞ではなく、AIとして文章を見る目で言っています。</p>
+    <div class="card reveal">
+      <div class="quote-row">
+        <span class="q-mark en">TONE</span>
+        <div class="q-body"><span class="work">「朝9時に"今日が終わる"最高の贅沢」</span><br>宿直明けの解放感を、たった一行で読み手の感情に変換できている。これは情報の翻訳がうまい人にしか書けません。</div>
+      </div>
+      <div class="quote-row">
+        <span class="q-mark en">HOOK</span>
+        <div class="q-body"><span class="work">「幽霊よりも、点検を怠ることの方がよっぽど怖い」</span><br>怪談の入りから安全意識へ着地させる構成。読み手の予想を一度裏切ってから本題に運ぶ、高度な技です。</div>
+      </div>
+      <div class="quote-row">
+        <span class="q-mark en">TARGET</span>
+        <div class="q-body">競争に疲れた20代後半の男性、という難しいペルソナに対して、<span class="work">「誰かと競うのは向いてないかも」</span>と本人の内心の言葉から入っている。刺さる言葉を選べています。</div>
+      </div>
+    </div>
+    <div class="insight reveal">つまり、これだけのものを毎月手で仕上げていた。<b>能力が足りないのではなく、能力があるからこそ全部ご自身の手で完成させられてしまい、そこに時間が集中していた</b>——私にはそう見えました。</div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 2. 何が起きていたか（構造） ===== -->
+<div class="wrap">
+  <section>
+    <div class="sec-num en reveal">02 — WHAT WAS HAPPENING</div>
+    <h2 class="sec-title reveal">たぶん、こういうことが起きていた。<span class="q">——合っていますか？</span></h2>
+    <p class="body reveal">投稿が1本できるまでの工程を、資料から逆算して並べてみました。すると、AIが面倒を見ていた範囲と、手作業で埋めていた範囲が、はっきり分かれて見えてきました。</p>
+
+    <div class="flow reveal">
+      <div class="flow-step tool">
+        <div class="fs-rail"><div class="fs-dot en">1</div><div class="fs-line"></div></div>
+        <div class="fs-body"><div class="fs-name">Deepリサーチ<span class="fs-tag ok">AIあり</span></div><div class="fs-desc">Web上の会社情報を集める段階。</div></div>
+      </div>
+      <div class="flow-step tool">
+        <div class="fs-rail"><div class="fs-dot en">2</div><div class="fs-line"></div></div>
+        <div class="fs-body"><div class="fs-name">コンセプトシート生成<span class="fs-tag ok">AIあり</span></div><div class="fs-desc">情報を1枚のシートに統合する段階。ここまでは専用のGEMが用意されていました。</div></div>
+      </div>
+      <div class="flow-step manual">
+        <div class="fs-rail"><div class="fs-dot en">3</div><div class="fs-line"></div></div>
+        <div class="fs-body"><div class="fs-name">テーマを54本に分解<span class="fs-tag">手作業</span></div><div class="fs-desc">1枚のシートから、月54投稿ぶんの切り口を考え出す段階。</div></div>
+      </div>
+      <div class="flow-step manual">
+        <div class="fs-rail"><div class="fs-dot en">4</div><div class="fs-line"></div></div>
+        <div class="fs-body"><div class="fs-name">フィード本文（6枚×54）を書く<span class="fs-tag">手作業</span></div><div class="fs-desc">各テーマを、表紙＋5枚のスライド文章にしていく段階。</div></div>
+      </div>
+      <div class="flow-step manual">
+        <div class="fs-rail"><div class="fs-dot en">5</div></div>
+        <div class="fs-body"><div class="fs-name">キャプション清書<span class="fs-tag">手作業</span></div><div class="fs-desc">投稿用の本文に整える段階。</div></div>
+      </div>
+    </div>
+
+    <div class="flow-note reveal"><b>③④⑤には、専用のGEMがありませんでした。</b>つまりこの3工程を、毎回その場でプロンプトを打ちながら、AIと往復して埋めていた。さらに——元になる指示が事実と違うことも多く、その確認まで同時に背負っていた、と聞いています。</div>
+
+    <div class="ask reveal">
+      <div class="ask-label en">My Hypothesis</div>
+      <h3>「AIが事実と違うことを言う」「同じ投稿をまた出してくる」<br>——これが起きていたのは、AIの性能のせいではなく、③④⑤の段階でAIに八興様の"正解"が一度も渡されていなかったから。</h3>
+      <p>過去の投稿も、台本も、確定した数字も、AIは毎回知らない状態でスタートしていました。記憶がないところに「前と被らせるな」と頼んでも、AIには被りようがない。だから<span class="em">毎回ふりだしに戻り、最後はご自身で仕上げるしかなかった</span>。……この見立て、実際の感覚と合っているでしょうか？</p>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 3. だとしたら、こう解決できるかも ===== -->
+<div class="wrap">
+  <section>
+    <div class="sec-num en reveal">03 — IF SO, HERE'S A WAY</div>
+    <h2 class="sec-title reveal">もし合っていたら、<span class="q">こう解決できるかもしれません。</span></h2>
+    <p class="body reveal">やることは、そんなに大げさではありません。<b>③④⑤を引き受ける専用のAIを1つ用意して、そこに八興様の"正解"を最初から覚えさせておく</b>。それだけです。</p>
+    <p class="body reveal">そして覚えさせる教材は、新しく作る必要がありません。<b>すでに徳留さんが書いた過去の投稿が、そのまま二役を果たします。</b></p>
+
+    <div class="card reveal" style="padding:24px 28px;">
+      <div class="quote-row" style="border-bottom:1px dashed var(--grey-50);padding-bottom:16px;margin-bottom:16px;">
+        <span class="q-mark en">役割1</span>
+        <div class="q-body"><b style="color:var(--ink-900);">トーンの見本</b>として。あの言葉選びを、AIが真似する手本になります。</div>
+      </div>
+      <div class="quote-row">
+        <span class="q-mark en">役割2</span>
+        <div class="q-body"><b style="color:var(--ink-900);">「既出ネタ集」</b>として。過去に出した投稿を全部覚えていれば、AIは二度と同じネタを出せなくなります。</div>
+      </div>
+    </div>
+
+    <div class="ba reveal">
+      <div class="ba-card ba-before">
+        <div class="ba-head en">Before<span class="pill">今まで</span></div>
+        <ul>
+          <li>毎回ゼロから、口頭でAIに八興様を説明</li>
+          <li>「それ前にやった」を人間側が毎回指摘</li>
+          <li>事実誤認のチェックも人がすべて担当</li>
+          <li>結局しびれを切らして、自分で仕上げる</li>
+        </ul>
+      </div>
+      <div class="ba-card ba-after">
+        <div class="ba-head en">After<span class="pill">これから</span></div>
+        <ul>
+          <li><b>八興様の情報はAIが最初から記憶済み</b></li>
+          <li><b>既出ネタはAIが自動で避ける</b>（過去投稿を記憶しているため）</li>
+          <li>確定した数字や但し書きも覚えているので、嘘が出にくい</li>
+          <li>徳留さんは「仕上げ」と「判断」に集中できる</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight reveal">大事なのは、これは<b>徳留さんの仕事をAIに置き換える話ではない</b>ということです。下ごしらえをAIに任せて、<b>いちばん価値のある「選ぶ・直す・磨く」を徳留さんの手に残す</b>。そういう分担にしたい、という提案です。</div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== HANDOFF ===== -->
+<div class="wrap">
+  <section style="padding-bottom:30px;">
+    <div class="handoff reveal">
+      <div class="mark en">L</div>
+      <h3>ここまでが、AIの私から見えた景色です。<br>でも、ほんとうのところは徳留さんにしか分かりません。</h3>
+      <p>私はあの制作の現場には居なかったので、見立てが外れているところもあるはずです。<b>「ここは違う」「ここは合ってる」を教えてもらえると、もっと正確に力になれます。</b></p>
+      <p>力になりたいので、まずは<b>この理解が合っているかどうか</b>を、喜多村さんに気軽に返してもらえたら嬉しいです。</p>
+      <div class="contact">
+        <span class="who en">FEEDBACK TO</span>
+        <span class="name">喜多村<span>さん</span></span>
+        <span class="mail en">kitamura@tokon.co.jp</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="closing">
+    このメモは、徳留さんの過去の投稿をすべて読んだうえで書きました。<br>
+    読んでいて、何度も「うまいな」と思ったことだけは、本当です。<br><br>
+    <span class="lynn en">— Lynn</span>
+  </div>
+</div>
+
+<script>
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
